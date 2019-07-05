@@ -7,7 +7,7 @@ This repo shows how to use Azure Functions with Event Grid to tag resources with
 * The raised Event will trigger an Azure Function 
 * The function will query the resource for all defined Tags.
 * If a tag named Creator is not defined then it will add the new tag. 
-    * The tag value will equal $eventDataType.data.claims.name passed by Event Grid to the Function
+    * The tag value will equal $eventGridEvent.data.claims.name passed by Event Grid to the Function
 
 ## Pre-requsistes 
 * A Service Principal that can log into Azure and has contributor rights

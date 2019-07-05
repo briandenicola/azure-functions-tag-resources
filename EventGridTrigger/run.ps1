@@ -3,6 +3,7 @@ param($eventGridEvent, $TriggerMetadata)
 $tenantId = $ENV:AZURE_TENANTID
 $subscription = $ENV:AZURE_SUBSCRIPTION_NAME
 $clientId = $ENV:AZURE_CLIENTID
+$tagName = "Creator"
 
 Write-Host ("Received EventGrid Event of type {0}" -f $eventGridEvent.eventType)
 
@@ -20,9 +21,9 @@ if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {
 
     $tags = (Get-AzResource -ResourceId $resourceId).tags
 
-    if( $tags.Keys -notcontains "Creator" ) { 
+    if( $tags.Keys -notcontains $tagName ) { 
         Write-Host ("Setting Creator Tag for `'{0}`' on id {1}" -f $resourceCreator, $resourceId )
-        $tags.Add("Creator", $resourceCreator) 
+        $tags.Add($tagName, $resourceCreator) 
         Set-AzResource -ResourceId $resourceId -Tag $tags -Force
     }
 }
