@@ -12,8 +12,7 @@ pool:
 steps:
   - bash: |
       cd Source
-      dotnet restore 
-      dotnet build 
+      dotnet build extensions.csproj -o bin --no-incremental --packages D:\home\.nuget
       
   - task: ArchiveFiles@2
     inputs:
