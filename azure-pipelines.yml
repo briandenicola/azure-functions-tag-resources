@@ -10,6 +10,10 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: 'Source'
