@@ -12,7 +12,7 @@ pool:
 steps:
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: 'EventGridTrigger'
+      rootFolderOrFile: 'Source'
       includeRootFolder: false
       archiveType: 'zip'
       archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
