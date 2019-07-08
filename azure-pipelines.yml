@@ -10,9 +10,9 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'build'
+  - bash: |
+      cd Source
+      dotnet restore 
       
   - task: ArchiveFiles@2
     inputs:
