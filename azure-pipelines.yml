@@ -13,6 +13,7 @@ steps:
   - bash: |
       cd Source
       dotnet restore 
+      dotnet build 
       
   - task: ArchiveFiles@2
     inputs:
