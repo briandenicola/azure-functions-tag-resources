@@ -1,0 +1,20 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+    - Infrastructure/*
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+    inputs:
+      SourceFolder: EventGridTrigger
+      TargetFolder: '$(build.artifactstagingdirectory)'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
