@@ -12,7 +12,7 @@ pool:
 steps:
   - bash: |
       cd Source
-      dotnet build extensions.csproj -o bin --no-incremental --packages D:\home\.nuget
+      dotnet build extensions.csproj -o bin 
       
   - task: ArchiveFiles@2
     inputs:
