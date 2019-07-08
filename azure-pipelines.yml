@@ -19,10 +19,10 @@ steps:
       replaceExistingArchive: true
       
   - task: CopyFiles@2
-    displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+    displayName: 'Copy Files to drop'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-      TargetFolder: '$(build.artifactstagingdirectory)'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)'
+      TargetFolder: 'drop'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
