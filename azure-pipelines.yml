@@ -35,4 +35,8 @@ steps:
       TargetFolder: 'drop'
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: drop'
+    inputs:
+      PathtoPublish: 'drop'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'
+
