@@ -7,7 +7,7 @@ export subscriptionName=$4
 export clientId=$5
 export clientSecret=$6
 
-az login
+#az login
 az account set -s $subscriptionName
 az group create -n $RG -l $location
 

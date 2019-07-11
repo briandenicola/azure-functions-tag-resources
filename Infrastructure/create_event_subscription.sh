@@ -9,7 +9,7 @@ eventSubscriptionName="ResourceCreationTracker003"
 # 
 # Must be run after the Function App has been deployed
 #
-az login
+#az login
 
 #Get Master Key for Functions
 userName=$(az functionapp deployment list-publishing-profiles -n $functionHostName -g $RG --query '[0].userName' --output tsv)
