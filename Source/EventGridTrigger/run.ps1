@@ -1,5 +1,7 @@
 param($eventGridEvent, $TriggerMetadata)
 
+Install-Module -Name Az -AllowClobber -Force -Scope CurrentUser
+
 $subscription = $ENV:AZURE_SUBSCRIPTION_NAME
 $tagName = "Creator"
 
