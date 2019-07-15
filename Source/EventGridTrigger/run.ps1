@@ -7,6 +7,9 @@ Write-Host ("Received EventGrid Event of type {0}" -f $eventGridEvent.eventType)
 
 if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {   
 
+    Import-Module -Name Az.Accounts
+    Import-Module -Name Az.Resources 
+    
     Connect-AzAccount -Identity
     Select-AzSubscription -SubscriptionName $subscription
     
