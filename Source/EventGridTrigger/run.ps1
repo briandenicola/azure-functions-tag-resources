@@ -1,7 +1,5 @@
 param($eventGridEvent, $TriggerMetadata)
 
-Install-Module -Name Az -AllowClobber -Force -Scope CurrentUser
-
 $subscription = $ENV:AZURE_SUBSCRIPTION_NAME
 $tagName = "Creator"
 
@@ -9,7 +7,6 @@ Write-Host ("Received EventGrid Event of type {0}" -f $eventGridEvent.eventType)
 
 if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {   
 
-    Connect-AzAccount -Identity
     Select-AzSubscription -SubscriptionName $subscription
     
     $resourceId = $eventGridEvent.data.resourceUri
