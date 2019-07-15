@@ -3,5 +3,5 @@
 # See https://aka.ms/functionsmanageddependency for additional information.
 #
 @{
-    'Az' = '2.*'
+    'Az' = '1.*'
 }

@@ -7,6 +7,7 @@ Write-Host ("Received EventGrid Event of type {0}" -f $eventGridEvent.eventType)
 
 if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {   
 
+    #Login to Azure is handled at the Function Host Level defined by the profile.ps1 file 
     Select-AzSubscription -SubscriptionName $subscription
     
     $resourceId = $eventGridEvent.data.resourceUri
