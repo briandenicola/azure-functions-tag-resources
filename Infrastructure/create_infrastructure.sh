@@ -21,7 +21,7 @@ az functionapp create --name $functionAppName \
     --os-type Windows \
     --runtime powershell
 az functionapp identity assign --name $functionAppName --resource-group $RG
-functionAppId="$(az functionapp identity show --name $functionAppName --resource-group $RG --query 'principalId' --output tsv)"
-
-az role assignment create -g $RG --role Contributor --assignee-object-id $functionAppId
 az functionapp config appsettings set -g $RG -n $functionAppName --settings AZURE_SUBSCRIPTION_NAME="$subscriptionName"
+
+functionAppId="$(az functionapp identity show --name $functionAppName --resource-group $RG --query 'principalId' --output tsv)"
+az role assignment create -g $RG --role Contributor --assignee-object-id $functionAppId
