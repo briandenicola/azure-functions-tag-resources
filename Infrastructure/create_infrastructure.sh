@@ -4,8 +4,6 @@ export RG=$1
 export location=$2
 export functionAppName=$3
 export subscriptionName=$4
-export clientId=$5
-export clientSecret=$6
 
 #az login
 az account set -s $subscriptionName
@@ -25,14 +23,5 @@ az functionapp create --name $functionAppName \
 az functionapp identity assign --name $functionAppName --resource-group $RG
 functionAppId="$(az functionapp identity show --name $functionAppName --resource-group $RG --query 'principalId' --output tsv)"
 
-# Create Key Vault 
-az keyvault create --name $keyVaultName --resource-group $RG --location $location 
-az keyvault set-policy --name $keyVaultName --object-id $functionAppId --secret-permissions get
-
-# Set Secret
-clientSecretId="$(az keyvault secret set --vault-name $keyVaultName --name clientSecret --value $clientSecret --query 'id' --output tsv)"
-tenantId="$(az account show -o tsv --query tenantId)"
-az functionapp config appsettings set -g $RG -n $functionAppName --settings AZURE_TENANTID="$tenantId"
+az role assignment create -g $RG --role Contributor --assignee-object-id $functionAppId
 az functionapp config appsettings set -g $RG -n $functionAppName --settings AZURE_SUBSCRIPTION_NAME="$subscriptionName"
-az functionapp config appsettings set -g $RG -n $functionAppName --settings AZURE_CLIENTID="$clientId"
-az functionapp config appsettings set -g $RG -n $functionAppName --settings AZURE_CLIENTSECRET="@Microsoft.KeyVault(SecretUri=$clientSecretId)"
