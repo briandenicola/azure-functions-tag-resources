@@ -24,4 +24,5 @@ az functionapp identity assign --name $functionAppName --resource-group $RG
 az functionapp config appsettings set -g $RG -n $functionAppName --settings AZURE_SUBSCRIPTION_NAME="$subscriptionName"
 
 functionAppId="$(az functionapp identity show --name $functionAppName --resource-group $RG --query 'principalId' --output tsv)"
+sleep 60s
 az role assignment create -g $RG --role Contributor --assignee-object-id $functionAppId
