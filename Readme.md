@@ -9,11 +9,8 @@ This repo shows how to use Azure Functions with Event Grid to tag resources with
 * If a tag named Creator is not defined then it will add the new tag. 
     * The tag value will equal $eventGridEvent.data.claims.name passed by Event Grid to the Function
 
-## Pre-requsistes 
-* A Service Principal that can log into Azure and has contributor rights
-
 ## Setup
-1. ./Infrastructure/create_infrastructure.sh $RG $location $functionHostName $subscriptionName $clientId $clientSecret
+1. ./Infrastructure/create_infrastructure.sh $RG $location $functionHostName $subscriptionName
 2. Deploy Function Code in EventGridTrigger Folder.
     * Use either Visual Studio Code or Azure Function cli to deploy the code
 3. ./Instrastructure/create_event_subscription.sh $RG $functionHostName $$functionName
