@@ -1,0 +1,30 @@
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  RG: 'DevSub01-EGTagging002-RG'
+  location: 'eastus2'
+  functionHostName: 'bjdtaggingfunc002'
+  subscriptionName: 'BJD_APP01_Subscription'
+
+steps:
+  - task: AzureCLI@1
+    displayName: 'Azure CLI Script'
+    inputs:
+      azureSubscription: $(subscriptionName)'
+      scriptPath: '$(System.DefaultWorkingDirectory)/_bjd145.TagAzureResourcesOnCreation/drop/create_infrastructure.sh'
+      arguments: '$(RG) $(location) $(functionHostName) $(subscriptionName)'
+      
+  - task: AzureFunctionApp@1
+    displayName: 'Azure Function Deploy'
+    inputs:
+      azureSubscription: '$(subscriptionName)'
+      appType: functionApp
+      appName: '$(functionHostName)'
+
+  - task: AzureCLI@1
+    displayName: 'Azure CLI Script'
+    inputs:
+      azureSubscription: '$(subscriptionName)'
+      scriptPath: '$(System.DefaultWorkingDirectory)/_bjd145.TagAzureResourcesOnCreation/drop/create_event_subscription.sh'
+      arguments: '$(RG) $(functionHostName) $(functionName)'
