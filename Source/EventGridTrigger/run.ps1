@@ -28,6 +28,7 @@ if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {
         if(  $eventGridEvent.data.claims.appid  -eq $COMPUTE_RESOURCE_PROVIDER ) {
             $creatorType = "Azure Compute Resource Provider"
         }
+        else {
             $creatorType = "Service Principal"
         }
         $resourceCreator = $eventGridEvent.data.claims.appid 
