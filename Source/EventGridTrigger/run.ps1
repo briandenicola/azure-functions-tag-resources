@@ -12,6 +12,9 @@ if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {
     
     $resourceId = $eventGridEvent.data.resourceUri
     $resourceCreator = $eventGridEvent.data.claims.name
+    if( [string]::IsNullOrEmpty($resourceCreator) ) {
+        $resourceCreator = $eventGridEvent.data.claims.appid 
+    }
 
     $tags = (Get-AzResource -ResourceId $resourceId).tags
 
