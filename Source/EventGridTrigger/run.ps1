@@ -11,13 +11,27 @@ if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {
     Select-AzSubscription -SubscriptionName $subscription
     
     $resourceId = $eventGridEvent.data.resourceUri
-    $resourceCreator = $eventGridEvent.data.claims.name
-    if( [string]::IsNullOrEmpty($resourceCreator) ) {
-        $resourceCreator = $eventGridEvent.data.claims.appid 
+    $resource = Get-AzResource -ResourceId $resourceId
+    
+    $resourceCreator = "Undetermined"
+    if( -not [string]::IsNullOrEmpty($eventGridEvent.data.claims.name) ) {
+        $resourceCreator = $eventGridEvent.data.claims.name
+    } else {
+        $appid = $eventGridEvent.data.claims.appid 
+        $appidDisplayName = Get-AzADApplication -ApplicationId $appid | Select-Object -ExpandProperty DisplayName
+
+        if(-not [string]::IsNullOrEmpty($appidDisplayName)) {
+            $resourceCreator = $appidDisplayName
+        }
+        else {
+            $parent = Get-AzResource -ResourceId $resource.ManagedBy -ErrorAction SilentlyContinue | Out-Null
+            if( $parent.Tags.ContainsKey($tagName) ) {
+                $resourceCreator = $parent.Tags[$tagName]
+            }
+        }
     }
 
-    $tags = (Get-AzResource -ResourceId $resourceId).tags
-
+    $tags = $resource.tags
     if( $tags.Keys -notcontains $tagName ) { 
         Write-Host ("Setting Creator Tag for `'{0}`' on id {1}" -f $resourceCreator, $resourceId )
         $tags.Add($tagName, $resourceCreator) 
