@@ -24,9 +24,9 @@ if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {
             if( $parent.Tags.ContainsKey($tagName) ) {
                 $resourceCreator = "{0} via {1}" -f $parent.Tags[$tagName], $appid
             } 
-            else {
-                $resourceCreator = $appid
-            }
+        }
+        else {
+            $resourceCreator = $appid
         }
     }
 
