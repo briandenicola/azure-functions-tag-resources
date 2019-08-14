@@ -1,4 +1,8 @@
+#https://github.com/prolsen/o365/blob/master/o365auditor.py
+
 param($eventGridEvent, $TriggerMetadata)
+
+Set-Variable -Name COMPUTE_RESOURCE_PROVIDER -Value '60e6cd67-9c8c-4951-9b3c-23c25a2169af' -Option Constant
 
 $subscription = $ENV:AZURE_SUBSCRIPTION_NAME
 $creatorTypeTagName = "CreatorType"
@@ -21,7 +25,11 @@ if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {
         $creatorType = "User"
         $resourceCreator = $eventGridEvent.data.claims.name
     } else {
-        $creatorType = "Service Principal"
+        if(  $eventGridEvent.data.claims.appid  -eq $COMPUTE_RESOURCE_PROVIDER ) {
+            $creatorType = "Azure Compute Resource Provider"
+        }
+            $creatorType = "Service Principal"
+        }
         $resourceCreator = $eventGridEvent.data.claims.appid 
     }
 
