@@ -1,7 +1,8 @@
 param($eventGridEvent, $TriggerMetadata)
 
 $subscription = $ENV:AZURE_SUBSCRIPTION_NAME
-$tagName = "Creator"
+$creatorTypeTagName = "CreatorType"
+$creatorTagName = "CreatedBy"
 
 Write-Host ("Received EventGrid Event of type {0}" -f $eventGridEvent.eventType)
 
@@ -13,27 +14,22 @@ if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {
     $resourceId = $eventGridEvent.data.resourceUri
     $resource = Get-AzResource -ResourceId $resourceId
     
+    Write-Host ("[{0}] - {1}: Received write event" -f $(Get-Date), $resource.Name)
+
     $resourceCreator = "Undetermined"
     if( -not [string]::IsNullOrEmpty($eventGridEvent.data.claims.name) ) {
+        $creatorType = "User"
         $resourceCreator = $eventGridEvent.data.claims.name
     } else {
-        $appid = $eventGridEvent.data.claims.appid 
-
-        if( -not [string]::IsNullOrEmpty($resource.ManagedBy) ) {
-            $parent = Get-AzResource -ResourceId $resource.ManagedBy -ErrorAction SilentlyContinue | Out-Null
-            if( $parent.Tags.ContainsKey($tagName) ) {
-                $resourceCreator = "{0} via {1}" -f $parent.Tags[$tagName], $appid
-            } 
-        }
-        else {
-            $resourceCreator = $appid
-        }
+        $creatorType = "Service Principal"
+        $resourceCreator = $eventGridEvent.data.claims.appid 
     }
 
     $tags = $resource.tags
-    if( $tags.Keys -notcontains $tagName ) { 
-        Write-Host ("Setting Creator Tag for `'{0}`' on id {1}" -f $resourceCreator, $resourceId )
-        $tags.Add($tagName, $resourceCreator) 
+    if( $tags.Keys -notcontains $creatorTagName ) { 
+        Write-Host ("[{0}] - {1}: Setting {2} Tag to `'{3}`' ({4})" -f $(Get-Date), $resource.Name, $creatorTagName, $resourceCreator, $resourceId )
+        $tags.Add($creatorTypeTagName, $creatorType) 
+        $tags.Add($creatorTagName, $resourceCreator) 
         Set-AzResource -ResourceId $resourceId -Tag $tags -Force
     }
 }
