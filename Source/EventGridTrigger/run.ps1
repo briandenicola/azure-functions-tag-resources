@@ -18,17 +18,22 @@ if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {
         $resourceCreator = $eventGridEvent.data.claims.name
     } else {
         $appid = $eventGridEvent.data.claims.appid 
-        $appidDisplayName = Get-AzADApplication -ApplicationId $appid | Select-Object -ExpandProperty DisplayName
+        $resourceCreator = "{0}" -f $appid
 
-        if(-not [string]::IsNullOrEmpty($appidDisplayName)) {
-            $resourceCreator = $appidDisplayName
-        }
-        else {
-            $parent = Get-AzResource -ResourceId $resource.ManagedBy -ErrorAction SilentlyContinue | Out-Null
-            if( $parent.Tags.ContainsKey($tagName) ) {
-                $resourceCreator = $parent.Tags[$tagName]
-            }
-        }
+        #
+        #Need to work out permission issue with System Identity and calling Azure AD APIs
+        #
+        #$appidDisplayName = Get-AzADApplication -ApplicationId $appid | Select-Object -ExpandProperty DisplayName
+
+        #if(-not [string]::IsNullOrEmpty($appidDisplayName)) {
+        #   $resourceCreator = "{0} ({1})" -f $appidDisplayName, $appid
+        #}
+        #else {
+        #    $parent = Get-AzResource -ResourceId $resource.ManagedBy -ErrorAction SilentlyContinue | Out-Null
+        #    if( $parent.Tags.ContainsKey($tagName) ) {
+        #        $resourceCreator = $parent.Tags[$tagName]
+        #    }
+        #}
     }
 
     $tags = $resource.tags
