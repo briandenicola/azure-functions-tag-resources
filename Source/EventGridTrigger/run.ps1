@@ -24,8 +24,7 @@ function Get-ServicePrincipalDisplayName {
         }
     }
     catch {
-        Write-Error -Message  ("[{0}] - Received Error of unknown type. . ." -f $(Get-Date))
-        
+        Write-Verbose -Message ("[{0}] - Received Error: {1}. . ." -f $(Get-Date), $_.Exception.Message)
     }
 
     return $DisplayName
@@ -35,7 +34,7 @@ $subscription = $ENV:AZURE_SUBSCRIPTION_NAME
 $creatorTypeTagName = "CreatorType"
 $creatorTagName = "CreatedBy"
 
-Write-Debug -Message ("[{0}] - {1}: EventGrid Event Received . . . " -f $(Get-Date), $eventGridEvent.eventType)
+Write-Host ("[{0}] - {1}: EventGrid Event Received . . . " -f $(Get-Date), $eventGridEvent.eventType)
 
 if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {   
 
@@ -46,13 +45,13 @@ if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {
     $resource = Get-AzResource -ResourceId $resourceId
 
     if( $null -eq $resource ) {
-        Write-Debug -Message ("[{0}] - Could find {1}" -f $(Get-Date), $resourceId )
+        Write-Host ("[{0}] - Could find {1}" -f $(Get-Date), $resourceId )
         return 
     }
 
     $tags = $resource.Tags
     if( $tags.Keys -notcontains $creatorTagName ) { 
-        Write-Debug -Message  ("[{0}] - {1}: {2} tag is not defined . . ." -f $(Get-Date), $resource.Name, $creatorTagName)
+        Write-Host ("[{0}] - {1}: {2} tag is not defined . . ." -f $(Get-Date), $resource.Name, $creatorTagName)
 
         if( -not [string]::IsNullOrEmpty($eventGridEvent.data.claims.name) ) {
             $creatorType = "User"
@@ -65,7 +64,7 @@ if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {
             $resourceCreator = "Unknown"
         }
 
-        Write-Debug -Message ("[{0}] - {1}: Setting {2} Tag to `'{3}`' ({4})" -f $(Get-Date), $resource.Name, $creatorTagName, $resourceCreator, $resourceId )
+        Write-Host ("[{0}] - {1}: Setting {2} Tag to `'{3}`' ({4})" -f $(Get-Date), $resource.Name, $creatorTagName, $resourceCreator, $resourceId )
         $tags.Add($creatorTypeTagName, $creatorType) 
         $tags.Add($creatorTagName, $resourceCreator) 
 
