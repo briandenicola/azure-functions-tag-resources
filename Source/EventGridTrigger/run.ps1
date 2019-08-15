@@ -48,7 +48,7 @@ if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {
         Write-Verbose -Message ("[{0}] - Could find {1}" -f $(Get-Date), $resourceId )
         return 
     }
-    
+
     $tags = $resource.Tags
     if( $tags.Keys -notcontains $creatorTagName ) { 
         Write-Verbose -Message  ("[{0}] - {1}: {2} tag is not defined . . ." -f $(Get-Date), $resource.Name, $creatorTagName)
@@ -68,7 +68,6 @@ if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {
         $tags.Add($creatorTypeTagName, $creatorType) 
         $tags.Add($creatorTagName, $resourceCreator) 
 
-        return $resourceCreator
         Set-AzResource -ResourceId $resourceId -Tag $tags -Force
     }
 }
