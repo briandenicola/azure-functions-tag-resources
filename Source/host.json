@@ -2,5 +2,10 @@
   "version": "2.0",
   "managedDependency": {
     "enabled": false 
+  },
+  "logging": {
+    "logLevel": {
+        "default": "Trace"
+    }
   }
 }

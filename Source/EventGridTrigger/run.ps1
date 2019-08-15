@@ -23,8 +23,8 @@ function Get-ServicePrincipalDisplayName {
         }
     }
     catch {
-        Write-Verbose -Message  ("[{0}] - Received Error: {1} . . ." -f $(Get-Date), $_.Exception.Message)
-        $DisplayName = "Unknown Appid - $appId"
+        Write-Verbose -Message  ("[{0}] - Received Error of unknown type. . ." -f $(Get-Date))
+        $DisplayName = $appId
     }
 
     return $DisplayName
@@ -39,11 +39,16 @@ Write-Verbose -Message ("[{0}] - {1}: EventGrid Event Received . . . " -f $(Get-
 if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {   
 
     #Login to Azure is handled at the Function Host Level defined by the profile.ps1 file 
-    Select-AzSubscription -SubscriptionName $subscription
+    Select-AzSubscription -SubscriptionName $subscription | Out-Null
     
     $resourceId = $eventGridEvent.data.resourceUri
     $resource = Get-AzResource -ResourceId $resourceId
 
+    if( $null -eq $resource ) {
+        Write-Verbose -Message ("[{0}] - Could find {1}" -f $(Get-Date), $resourceId )
+        return 
+    }
+    
     $tags = $resource.Tags
     if( $tags.Keys -notcontains $creatorTagName ) { 
         Write-Verbose -Message  ("[{0}] - {1}: {2} tag is not defined . . ." -f $(Get-Date), $resource.Name, $creatorTagName)
@@ -51,14 +56,19 @@ if( $eventGridEvent.eventType -eq "Microsoft.Resources.ResourceWriteSuccess" ) {
         if( -not [string]::IsNullOrEmpty($eventGridEvent.data.claims.name) ) {
             $creatorType = "User"
             $resourceCreator = $eventGridEvent.data.claims.name
-        } else {
+        } elseif( -not [string]::IsNullOrEmpty($eventGridEvent.data.claims.appid)) {
             $creatorType = "Service Principal"
             $resourceCreator = Get-ServicePrincipalDisplayName -appId $eventGridEvent.data.claims.appid 
+        } else {
+            $creatorType = "Unknown"
+            $resourceCreator = "Unknown"
         }
 
         Write-Verbose -Message ("[{0}] - {1}: Setting {2} Tag to `'{3}`' ({4})" -f $(Get-Date), $resource.Name, $creatorTagName, $resourceCreator, $resourceId )
         $tags.Add($creatorTypeTagName, $creatorType) 
         $tags.Add($creatorTagName, $resourceCreator) 
+
+        return $resourceCreator
         Set-AzResource -ResourceId $resourceId -Tag $tags -Force
     }
 }
