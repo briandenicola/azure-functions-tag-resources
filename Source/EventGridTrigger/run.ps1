@@ -18,7 +18,10 @@ function Get-ServicePrincipalDisplayName {
     try {
         $knownApplication = $KNOWN_APPID | Where-Object Appid -eq $appId
         if( $null -eq $knownApplication ) {
-            $DisplayName = Get-AzADServicePrincipal -Applicationid $appId | Select-Object -ExpandProperty DisplayName
+            $DisplayName = Get-AzADServicePrincipal -Applicationid $appId | Select-Object -ExpandProperty DisplayName -ErrorAction SilentlyContinue
+            if( [string]::IsNullOrEmpty($DisplayName) ) {
+                $DisplayName = $appId
+            }
         } else {
             $DisplayName = $knownApplication.DisplayName
         }
